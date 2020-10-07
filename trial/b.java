@@ -1,7 +1,10 @@
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class b {
     public static void main(String[] args) throws Exception {
@@ -9,74 +12,41 @@ public class b {
         long n = scanner.nextLong();
         long x = scanner.nextLong();
         long k = scanner.nextLong();
-        Alarm alarms[] = new Alarm[(int)n];
-        for (int i = 0; i < n; i++)
-            alarms[i] = new Alarm(scanner.nextLong());
-        Arrays.sort(alarms);
-        Alarm a = new Alarm(0);
-        int cycle = 0, i = 0;
-        while (i < k) {
-            a = alarms[0];
-            int j = 0;
-            while (j < n && alarms[j].compareTo(a) == 0) {
-                alarms[j].next(x, cycle);
-                j++;
-            }
-            int shift = j;
-            while (j < n && alarms[j - 1].compareTo(alarms[j]) > 0) {
-                Alarm aa = alarms[j];
-                System.arraycopy(alarms, j - shift, alarms, j - shift + 1, shift);
-                alarms[j - shift] = aa;
-                j++;
-            }
-            if (Alarm.isCycleComplete((int)n)) {
-               long ncycles = k / (i + 1) - 1;
-               if (ncycles > 0) {
-                  cycle += ncycles;
-                  for (Alarm alarm: alarms) alarm.multiply(ncycles, cycle);
-                  i *= ncycles;
-                  Alarm.cycled = 0;
-                  a = alarms[0];
-               } else 
-                  i++;
-            } else
-               i++;
-        }
-        System.out.println(a.time);
+        Map<Long, Long> dedup = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            long t = scanner.nextLong();
+            dedup.merge(t % x, t, (old, tt) -> { 
+               if (tt < old) return tt; else return old;  
+            });
+        }    
+        long times[] = new long[dedup.size()];
+        int i = 0;
+        for (Map.Entry<Long, Long> e: dedup.entrySet())
+           times[i++] = e.getValue();
+         long r = 1_000_000_000L * 1_000_000_000L, l = 0;
+         while (l <= r) {
+            long m = (l + r) / 2;
+            if (rings(times, m, x) < k)
+               l = m + 1;
+            else
+               r = m - 1;
+         }
+         if (rings(times, l, x) == k)
+            System.out.println(l);
+         else if (rings(times, r + 1, x) == k)
+            System.out.println(r + 1);
+         else 
+            System.out.println(r);
     }
 
-    static class Alarm implements Comparable<Alarm> {
-        static int cycled = 0;
-        long time;
-        int cycle;
-        
-        Alarm(long t) {
-            this.time = t;
-            this.cycle = 0;
-        }
-
-        void next(long x, int c) {
-            this.time += x;
-            if (this.cycle != c)
-               Alarm.cycled++;
-            this.cycle = c; 
-        }
-
-        void multiply(long n, int c) {
-            this.time *= n;
-            this.cycle = c; 
-        }
-
-        static boolean isCycleComplete(int n) {
-            return Alarm.cycled == n;
-        }
-
-        @Override
-        public int compareTo(Alarm a) {
-            return Long.compare(this.time, a.time);
-        }
-    }
-
+    static long rings(long times[], long t, long x) {
+      long r = 0;
+      for (long tt: times) 
+         if (tt <= t)
+            r += Math.max((t - tt) / x, 0) + 1;
+      return r;
+   }
+   
     static class Scanner {
         private BufferedInputStream in;
      
