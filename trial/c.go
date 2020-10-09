@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -12,11 +13,18 @@ import (
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
-func nextInt(s *bufio.Scanner) int {
+type scanner struct {
+	*bufio.Scanner
+}
+
+func newScanner(reader io.Reader) *scanner {
+	return &scanner{bufio.NewScanner(bufio.NewReader(reader))}
+}
+
+func (s *scanner) readInt() int {
 	if s.Scan() {
-		var r int
-		var err error
-		if r, err = strconv.Atoi(s.Text()); err != nil {
+		r, err := strconv.Atoi(s.Text())
+		if err != nil {
 			panic(err)
 		}
 		return r
@@ -34,15 +42,15 @@ func main() {
         pprof.StartCPUProfile(f)
         defer pprof.StopCPUProfile()
 	}
-	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+	scanner := newScanner(os.Stdin)
 	scanner.Split(bufio.ScanWords)
-	k := nextInt(scanner)
-	n := nextInt(scanner)
+	k := scanner.readInt()
+	n := scanner.readInt()
 	petya := 0
 	vasya := 0
 	win := ""
 	for i := 0; i < n; i++ {
-		val := nextInt(scanner)
+		val := scanner.readInt()
 		if val % 15 != 0 {
 			if val % 3 == 0 {
 				petya++
