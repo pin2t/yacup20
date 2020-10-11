@@ -12,12 +12,10 @@ public class b {
         long n = scanner.nextLong();
         long x = scanner.nextLong();
         long k = scanner.nextLong();
-        Dedup dedup = new Dedup(n);
-        for (int i = 0; i < n; i++) {
-            long t = scanner.nextLong();
-            dedup.merge(t % x, t);
-        }    
-        long times[] = dedup.values();
+        UniqueAlarms unique = new UniqueAlarms(x, n);
+        for (int i = 0; i < n; i++)
+            unique.merge(scanner.nextLong());
+        long times[] = unique.alarms();
          long r = 1_000_000_000L * 1_000_000_000L, l = 0;
          while (l <= r) {
             long m = (l + r) / 2;
@@ -42,12 +40,44 @@ public class b {
       return r;
    }
    
-   static class Dedup {
+   static class UniqueAlarms {
+      static final int BUCKETS_CNT = 100;
+      private final Bucket[] buckets;
+      private final long period;
+
+      UniqueAlarms(long period, long alarmsCnt) {
+         this.buckets = new Bucket[BUCKETS_CNT];
+         for (int i = 0; i < BUCKETS_CNT; i++) 
+            this.buckets[i] = new Bucket(alarmsCnt);
+         this.period = period;
+      }
+
+      int size() {
+         int c = 0;
+         for (Bucket b: this.buckets) c += b.size();
+         return c;
+      }
+
+      void merge(long val) {
+         long r = val % this.period;
+         this.buckets[(int)(r % (long)BUCKETS_CNT)].merge(r, val);
+      }
+
+      long[] alarms() {
+         long[] alarms = new long[this.size()];
+         int i = 0;
+         for (Bucket b: this.buckets)
+            i += b.copyValues(alarms, i);
+         return alarms;   
+      }
+   }
+
+   static class Bucket {
       private final long[] keys;
       private final long[] vals;
       private int n;
 
-      Dedup(long capacity) {
+      Bucket(long capacity) {
          this.keys = new long[(int)capacity];
          this.vals = new long[(int)capacity];
          this.n = 0;
@@ -57,12 +87,8 @@ public class b {
          int i = Arrays.binarySearch(this.keys, 0, this.n, key);
          if (i < 0) {
             int ii = -(i + 1); // insertion index
-            for (int j = this.n; j > ii; j--) {
-               this.keys[j] = this.keys[j - 1];
-               this.vals[j] = this.vals[j - 1];
-            }
-//            System.arraycopy(this.keys, ii, this.keys, ii + 1, this.n - ii);
-//            System.arraycopy(this.vals, ii, this.vals, ii + 1, this.n - ii);
+            System.arraycopy(this.keys, ii, this.keys, ii + 1, this.n - ii);
+            System.arraycopy(this.vals, ii, this.vals, ii + 1, this.n - ii);
             this.keys[ii] = key;
             this.vals[ii] = val;
             this.n++;
@@ -78,6 +104,11 @@ public class b {
          long[] values = new long[this.n];
          for (int i = 0; i < n; i++) values[i] = this.vals[i];
          return values; 
+      }
+
+      int copyValues(long[] to, int index) {
+         for (int i = 0; i < this.n; i++) to[index + i] = this.vals[i];
+         return this.n; 
       }
    }
 
