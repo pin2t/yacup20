@@ -12,17 +12,12 @@ public class b {
         long n = scanner.nextLong();
         long x = scanner.nextLong();
         long k = scanner.nextLong();
-        Map<Long, Long> dedup = new HashMap<>();
+        Dedup dedup = new Dedup(n);
         for (int i = 0; i < n; i++) {
             long t = scanner.nextLong();
-            dedup.merge(t % x, t, (old, tt) -> { 
-               if (tt < old) return tt; else return old;  
-            });
+            dedup.merge(t % x, t);
         }    
-        long times[] = new long[dedup.size()];
-        int i = 0;
-        for (Map.Entry<Long, Long> e: dedup.entrySet())
-           times[i++] = e.getValue();
+        long times[] = dedup.values();
          long r = 1_000_000_000L * 1_000_000_000L, l = 0;
          while (l <= r) {
             long m = (l + r) / 2;
@@ -47,6 +42,45 @@ public class b {
       return r;
    }
    
+   static class Dedup {
+      private final long[] keys;
+      private final long[] vals;
+      private int n;
+
+      Dedup(long capacity) {
+         this.keys = new long[(int)capacity];
+         this.vals = new long[(int)capacity];
+         this.n = 0;
+      }
+
+      void merge(long key, long val) {
+         int i = Arrays.binarySearch(this.keys, 0, this.n, key);
+         if (i < 0) {
+            int ii = -(i + 1); // insertion index
+            for (int j = this.n; j > ii; j--) {
+               this.keys[j] = this.keys[j - 1];
+               this.vals[j] = this.vals[j - 1];
+            }
+//            System.arraycopy(this.keys, ii, this.keys, ii + 1, this.n - ii);
+//            System.arraycopy(this.vals, ii, this.vals, ii + 1, this.n - ii);
+            this.keys[ii] = key;
+            this.vals[ii] = val;
+            this.n++;
+         } else if (val < this.vals[i]) {
+            this.keys[i] = key;
+            this.vals[i] = val;
+         }
+      }
+
+      int size() { return n; }
+
+      long[] values() { 
+         long[] values = new long[this.n];
+         for (int i = 0; i < n; i++) values[i] = this.vals[i];
+         return values; 
+      }
+   }
+
     static class Scanner {
         private BufferedInputStream in;
      
