@@ -16,9 +16,7 @@ public class b {
       for (int i = 0; i < n; i++) {
          long t = scanner.nextLong();
          long v = unique.get(t % x);
-         if (v == IntIntMap3.NO_VALUE)
-            unique.put(t % x, t);
-         else if (t < v)
+         if (v == IntIntMap3.NO_VALUE || t < v)
             unique.put(t % x, t);
       }
       long times[] = unique.values();
