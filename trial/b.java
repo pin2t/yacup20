@@ -1,10 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class b {
    public static void main(String[] args) throws Exception {
@@ -103,12 +99,15 @@ public class b {
          final int capacity = arraySize(size, fillFactor);
          m_mask = capacity - 1;
          m_fillFactor = fillFactor;
+         this.alloc(capacity);
+         m_threshold = (int) (capacity * fillFactor);
+      }
 
-         m_keys = new long[capacity];
-         m_values = new long[capacity];
+      private void alloc(final int capacity) {
+         this.m_keys = new long[capacity];
+         this.m_values = new long[capacity];
          for (int i = 0; i < capacity; i++)
             this.m_keys[i] = FREE_KEY;
-         m_threshold = (int) (capacity * fillFactor);
       }
 
       public long get(final long key) {
@@ -188,17 +187,11 @@ public class b {
       private void rehash(final int newCapacity) {
          m_threshold = (int) (newCapacity * m_fillFactor);
          m_mask = newCapacity - 1;
-
          final int oldCapacity = m_keys.length;
          final long[] oldKeys = m_keys;
          final long[] oldValues = m_values;
-
-         m_keys = new long[newCapacity];
-         m_values = new long[newCapacity];
+         this.alloc(newCapacity);
          m_size = m_hasFreeKey ? 1 : 0;
-         for (int i = 0; i < newCapacity; i++)
-            this.m_keys[i] = FREE_KEY;
-
          for (int i = oldCapacity; i-- > 0;) {
             if (oldKeys[i] != FREE_KEY)
                put(oldKeys[i], oldValues[i]);
@@ -359,7 +352,7 @@ public class b {
       }
 
       public double nextDouble() {
-         return new Double(next());
+         return Double.parseDouble(next());
       }
 
       public long nextLong() {
