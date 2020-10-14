@@ -12,7 +12,7 @@ public class b {
       long n = scanner.nextLong();
       long x = scanner.nextLong();
       long k = scanner.nextLong();
-      IntIntMap3 unique = new IntIntMap3((int) n, 0.9f);
+      IntIntMap3 unique = new IntIntMap3((int) n, 0.99f);
       for (int i = 0; i < n; i++) {
          long t = scanner.nextLong();
          long v = unique.get(t % x);
@@ -47,7 +47,7 @@ public class b {
    }
 
    public static class IntIntMap3 {
-      private static final int FREE_KEY = 0;
+      private static final int FREE_KEY = 1000000001;
 
       public static final int NO_VALUE = 0;
 
@@ -108,6 +108,8 @@ public class b {
 
          m_keys = new long[capacity];
          m_values = new long[capacity];
+         for (int i = 0; i < capacity; i++)
+            this.m_keys[i] = FREE_KEY;
          m_threshold = (int) (capacity * fillFactor);
       }
 
@@ -178,9 +180,10 @@ public class b {
       public long[] values() {
          long[] values = new long[m_size];
          int i = 0;
-         for (long v : m_values)
-            if (v != NO_VALUE)
-               values[i++] = v;
+         for (int j = m_keys.length; j-- > 0;) {
+            if (m_keys[j] != FREE_KEY)
+               values[i++] = m_values[j];
+         }
          return values;
       }
 
@@ -195,6 +198,8 @@ public class b {
          m_keys = new long[newCapacity];
          m_values = new long[newCapacity];
          m_size = m_hasFreeKey ? 1 : 0;
+         for (int i = 0; i < newCapacity; i++)
+            this.m_keys[i] = FREE_KEY;
 
          for (int i = oldCapacity; i-- > 0;) {
             if (oldKeys[i] != FREE_KEY)
@@ -278,6 +283,14 @@ public class b {
 
       private int getNextIndex(final int currentIndex) {
          return (currentIndex + 1) & m_mask;
+      }
+
+      public void print() {
+         System.out.print("[size:" + this.size());
+         for (int i = 0; i < this.m_keys.length; i++) 
+            if (this.m_keys[i] != FREE_KEY) 
+               System.out.print(" " + this.m_keys[i] + ":" + this.m_values[i]);
+         System.out.println("]");
       }
    }
 
