@@ -30,6 +30,7 @@ public class a {
     }
 }
 
+/** @todo change typ to enum */
 class Interval {
     String typ;
     LocalDate start, end;
