@@ -13,16 +13,18 @@ type interval struct {
 	start, end time.Time
 }
 
+// TODO: implemet other types
 func newInterval(t string, s time.Time) interval {
 	var end time.Time
 	var wd int = int(s.Weekday())
-	if wd == 0 { wd = 7 }
+	if wd == 0 { wd = 7 } // reenumerate days (1 - Moday .. 7 - Sunday)
 	switch (t) {
 	case "WEEK": end = s.AddDate(0, 0, 7 - wd)
 	}
 	return interval{t, s, end}
 }
 
+// TODO: implemet other types
 func (i interval) next() interval {
 	var newend, newstart time.Time
 	newstart = i.end.AddDate(0, 0, 1)
