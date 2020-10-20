@@ -9,8 +9,9 @@ import org.json.simple.parser.*;
 public class d {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
+        PrintWriter out = new PrintWriter(System.out);
         int n = scanner.nextInt(), m = scanner.nextInt();
-//        System.out.print("{\"offers\":[");
+        out.print("{\"offers\":[");
         int written = 0;
         JSONParser parser = new JSONParser();
         while (scanner.hasNext())
@@ -19,13 +20,14 @@ public class d {
             JSONObject feed = (JSONObject)parser.parse(scanner.nextLine());
             JSONArray offers = (JSONArray)feed.get("offers");
             for (Object offer: offers) {
-                if (written > 0) System.out.print(",");
+                if (written > 0) out.print(",");
                 written++;
                 ((JSONObject)offer).writeJSONString(new PrintWriter(System.out));
                 if (written == m) break;
             }
         }
-        System.out.print("]}");
+        out.print("]}");
+        out.close();
     }
 }
 
