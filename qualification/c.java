@@ -14,7 +14,7 @@ public class c {
         server.createContext("/validatePhoneNumber", new PhoneNumberHandler());
         server.createContext("/shutdown", new ShutdownHandler(server));
         server.setExecutor(Executors.newWorkStealingPool());
-//        System.out.println("Listen on " + addr.getHostName() + ":" + addr.getPort());
+        System.out.println("Listening on " + addr.getHostName() + ":" + addr.getPort());
         server.start();
     }
 }
@@ -43,6 +43,10 @@ class QueryParameters extends HashMap<String, String> {
     }
 }
 
+/** 
+ * Helper class to wrap verbose HttpExchange methods with 
+ * little convinient ones
+ */
 class Exchange {
     HttpExchange exchange;
 
@@ -68,6 +72,9 @@ class Exchange {
     }
 }
 
+/**
+ * Helper class to wrap HttpExchange with local Exchange class
+ */
 class AppHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -100,6 +107,9 @@ class ShutdownHandler extends AppHandler {
     }
 }
 
+/** 
+ * @todo fix ugly JSON generation by string concatenation
+ */
 class PhoneNumberHandler extends AppHandler {
     private static String statusFalse = "{\"status\": false}";
 
@@ -117,7 +127,8 @@ class PhoneNumberHandler extends AppHandler {
             if (norm.startsWith("+7"))
                 norm = "8" + norm.substring(2);   
             if (norm.length() != 11 || (!norm.startsWith("8982") 
-                && !norm.startsWith("8988") && !norm.startsWith("8912") && !norm.startsWith("8934")))
+                && !norm.startsWith("8988") && !norm.startsWith("8912") 
+                && !norm.startsWith("8934")))
                 e.response(200, PhoneNumberHandler.statusFalse);
             else    
                 e.response(200, String.join("\n", "{",
