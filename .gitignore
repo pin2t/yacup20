@@ -1,6 +1,5 @@
 *.prof
 *.pprof
-*.txt
 *.cpu
 *.class
 c

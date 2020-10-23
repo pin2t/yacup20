@@ -12,18 +12,18 @@ public class d {
         int written = 0;
         JSONParser parser = new JSONParser();
         HashSet<Long> skus = new HashSet<>();
+        outer:
         for (int l = 0; l < n; l++) {
             JSONObject feed = (JSONObject)parser.parse(scanner.nextLine());
             JSONArray offers = (JSONArray)feed.get("offers");
-            for (Object offer: offers) {
-                JSONObject off = (JSONObject)offer;
-                Long sku = (Long)off.get("market_sku");
+            for (Object o: offers) {
+                JSONObject offer = (JSONObject)o;
+                Long sku = (Long)offer.get("market_sku");
                 if (!skus.contains(sku)) {
                     skus.add(sku);
-                    if (written > 0) out.print(",");
-                    written++;
-                    ((JSONObject)offer).writeJSONString(out);
-                    if (written == m) break;
+                    if (written++ > 0) out.print(",");
+                    offer.writeJSONString(out);
+                    if (written == m) break outer;
                 }
             }
         }
