@@ -19,4 +19,6 @@ Solutions implemented in Go run by
 `go run a.go`
 
 ## HTTP 
-Files *.http are for VSCode REST Client plugin for testing solutions which exposes HTTP endpoints
+Files *.http are for VSCode [REST Client][rc] plugin for testing solutions which exposes HTTP endpoints
+
+[rc]: https://github.com/Huachao/vscode-restclient.git
