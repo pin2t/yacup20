@@ -3,22 +3,22 @@ Yandex Cup 2020 backend section solutions
 
 Problems implemented in Java and Go just for fun and comparison
 
-Only F problem works. Others unknown
+For qualification round only F problem works. Others unknown
 
 ## How to run?
-Solutions implemented in Java run by 
+Java solutions 
 
 `java a.java`  or `java c.java < cinp.txt`
 
-Solutions which requires JSON library run as 
+with JSON library
 
 `java -cp jsom-simple-1.1.1.jar d.java < dinput.txt`
 
-Solutions implemented in Go run by 
+Go solutions
 
 `go run a.go`
 
 ## HTTP 
-Files *.http are for VSCode [REST Client][rc] plugin for testing solutions which exposes HTTP endpoints
+Files *.http are for VSCode [REST Client][rc] plugin. A simple way to test REST API-s
 
 [rc]: https://github.com/Huachao/vscode-restclient.git
