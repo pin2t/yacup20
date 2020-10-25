@@ -14,12 +14,8 @@ public class e {
         for (int i = 0; i < k; i++) important[i] = false;
         for (int i = 0; i < s; i++)
             important[scanner.nextInt() - 1] = true;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < k; j++) rows[i][j] = "";
-            String fields[] = scanner.nextLine().split("\t");
-            for (int j = 0; j < fields.length; j++)
-                rows[i][j] = fields[j];
-        }
+        for (int i = 0; i < n; i++) 
+            rows[i] = scanner.nextRow(k);
         int similar = 0;
         for (int i = 0; i < n - 1; i++)
             for (int j = i + 1; j < n; j++)
@@ -27,6 +23,16 @@ public class e {
                     similar++;
         System.out.println(similar);
     }    
+
+    static void printRow(String[] row, PrintStream to) {
+        to.print('[');
+        int i = 0;
+        for (String s: row) {
+            if (i++ > 0) to.print(',');
+            to.printf("'%s'", s);
+        }
+        to.print(']');
+    }
 
     /** function similar assumes both arrays are the same length  */
     static boolean similar(String[] row1, String[] row2) {
@@ -103,6 +109,23 @@ class Scanner {
        return sb.toString();   
     }
  
+    public String[] nextRow(int columns) {
+        String[] row = new String[columns];
+        String s = this.nextLine();
+        int col = 0, pos = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == (char)9) {
+                row[col++] = pos == i ? "" : s.substring(pos, i);
+                pos = i + 1;
+                if (col >= row.length)
+                    throw new RuntimeException("line '" + s + "' contains more than " + columns + " columns");
+            } 
+        }
+        while (col < row.length)
+            row[col++] = "";
+        return row;
+    }
+
     public int nextInt() {
        String s = next();
        try {
